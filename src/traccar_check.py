@@ -16,20 +16,18 @@ def run(
     base_url: str,
     token: str,
 ) -> int:
-    logging.info("Fetching devices and positions from Traccar")
     devices = fetch(base_url.rstrip("/") + "/api/devices", token, False)
     positions = fetch(base_url.rstrip("/") + "/api/positions", token, False)
     latest_by_dev = latest_position_by_device(positions)
 
     acc = get_account_sync(STORE_PATH, ANISETTE_SERVER, ANISETTE_LIBS_PATH)
     print(f"Logged in as: {acc.account_name} ({acc.first_name} {acc.last_name})")
-    print("Device status (Traccar vs. Find My):")
     for d in devices:
         latest_pos = latest_by_dev.get(d.get("id"))
         key = KeyPair.from_b64(d.get("uniqueId"))
         reports = acc.fetch_last_reports(key)
 
-        print(f"- {d.get("uniqueId")}: traccar_latest={latest_pos}")
+        print(f"{d.get("uniqueId")} latest: {latest_pos}")
         reports_sorted = sorted(reports, key=lambda r: r.timestamp) if reports else []
 
         for rep in reports_sorted:
@@ -41,8 +39,7 @@ def run(
             elif not rep.timestamp:
                 status = "NO_REPORT"
 
-            fm_s = rep.timestamp.isoformat() if rep.timestamp else "-"
-            print(f"  * findmy={fm_s}  status={status}")
+            print(f" * findmy: {rep.timestamp}  status={status}")
 
             if status == "NEW" and rep.timestamp is not None:
                 params = {
