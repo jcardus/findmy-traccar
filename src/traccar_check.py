@@ -39,8 +39,7 @@ def run(
             elif not rep.timestamp:
                 status = "NO_REPORT"
 
-            print(f" * findmy: {rep.timestamp}  status={status}")
-
+            #print(f" * findmy: {rep.timestamp}  status={status}")
             if status == "NEW" and rep.timestamp is not None:
                 params = {
                     "id": d.get("uniqueId"),
