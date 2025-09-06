@@ -6,11 +6,7 @@ import requests
 from findmy import KeyPair
 
 from _login import get_account_sync
-from traccar_client import (
-    fetch_devices,
-    fetch_positions,
-    latest_position_by_device,
-)
+from traccar_client import (latest_position_by_device, fetch)
 
 STORE_PATH = "account.json"
 ANISETTE_SERVER: Optional[str] = None
@@ -21,8 +17,8 @@ def run(
     token: str,
 ) -> int:
     logging.info("Fetching devices and positions from Traccar")
-    devices = fetch_devices(base_url, token, False)
-    positions = fetch_positions(base_url, token, False)
+    devices = fetch(base_url.rstrip("/") + "/api/devices", token, False)
+    positions = fetch(base_url.rstrip("/") + "/api/positions", token, False)
     latest_by_dev = latest_position_by_device(positions)
 
     acc = get_account_sync(STORE_PATH, ANISETTE_SERVER, ANISETTE_LIBS_PATH)

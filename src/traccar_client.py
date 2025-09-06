@@ -6,19 +6,7 @@ import requests
 def _auth_headers(token: str) -> Dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
-def fetch_devices(base_url: str, token: str, verify_tls: bool = True, timeout: int = 20) -> List[Dict[str, Any]]:
-    url = base_url.rstrip("/") + "/api/devices"
-    resp = requests.get(url, headers=_auth_headers(token), timeout=timeout, verify=verify_tls)
-    resp.raise_for_status()
-    return resp.json()
-
-def fetch_positions(
-    base_url: str,
-    token: str,
-    verify_tls: bool = True,
-    timeout: int = 20,
-) -> List[Dict[str, Any]]:
-    url = base_url.rstrip("/") + "/api/positions"
+def fetch(url: str, token: str, verify_tls: bool = True, timeout: int = 20) -> List[Dict[str, Any]]:
     resp = requests.get(url, headers=_auth_headers(token), timeout=timeout, verify=verify_tls)
     resp.raise_for_status()
     return resp.json()
