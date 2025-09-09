@@ -25,7 +25,7 @@ def run(
     for d in devices:
         latest_pos = latest_by_dev.get(d.get("id"))
         key = KeyPair.from_b64(d.get("uniqueId"))
-        reports = acc.fetch_last_reports(key)
+        reports = acc.fetch_location_history(key)
 
         print(f"{d.get("uniqueId")} latest: {latest_pos}")
         reports_sorted = sorted(reports, key=lambda r: r.timestamp) if reports else []
