@@ -6,7 +6,7 @@ beautifulsoup4==4.13.5
 bleak==1.1.0
 cffi==1.17.1
 cryptography==45.0.7
-FindMy==0.8.1
+git+https://github.com/malmeloo/FindMy.py
 frozenlist==1.7.0
 idna==3.10
 multidict==6.6.4
@@ -16,7 +16,7 @@ pyobjc-core==11.1
 pyobjc-framework-Cocoa==11.1
 pyobjc-framework-CoreBluetooth==11.1
 pyobjc-framework-libdispatch==11.1
-requests==2.31.0
+requests==2.32.4
 six==1.17.0
 soupsieve==2.8
 srp==1.0.22
