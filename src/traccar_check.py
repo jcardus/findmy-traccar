@@ -1,5 +1,6 @@
 import argparse
 import logging
+import time
 from typing import Optional
 
 import requests
@@ -69,7 +70,12 @@ def main() -> int:
     args = ap.parse_args()
 
     logging.basicConfig(level=logging.INFO)
-    return run(args.url, args.token)
+    
+    while True:
+        print(f"Running traccar_check at {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        run(args.url, args.token)
+        print("Waiting 1 hour before next check...")
+        time.sleep(3600)  # Sleep for 1 hour (3600 seconds)
 
 
 if __name__ == "__main__":
