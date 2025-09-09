@@ -53,7 +53,7 @@ def run(
                 }
                 resp = requests.get(f"{base_url}:5055", params=params, timeout=10, verify=False)
                 if 200 <= resp.status_code < 300:
-                    print("    -> OsmAnd push OK")
+                    print(f"{params} -> OsmAnd push OK")
                 else:
                     print(f"    -> OsmAnd push failed ({resp.status_code}): {resp.text[:200]}")
 
