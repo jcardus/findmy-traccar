@@ -64,7 +64,7 @@ def run(
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Check Traccar devices for newer Find My positions")
-    ap.add_argument("--url", required=True, help="Traccar base URL, e.g., https://traccar.example.com")
+    ap.add_argument("--url", default="http://localhost", help="Traccar base URL, e.g., https://traccar.example.com (default: http://localhost)")
     ap.add_argument("--token", required=True, help="Traccar access token (Bearer)")
     ap.add_argument("--osmand-url", help="If set, push NEW positions to this OsmAnd endpoint, e.g., https://host:5055/")
     args = ap.parse_args()
