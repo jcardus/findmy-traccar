@@ -66,7 +66,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Check Traccar devices for newer Find My positions")
     ap.add_argument("--url", default="http://localhost", help="Traccar base URL, e.g., https://traccar.example.com (default: http://localhost)")
     ap.add_argument("--token", required=True, help="Traccar access token (Bearer)")
-    ap.add_argument("--osmand-url", help="If set, push NEW positions to this OsmAnd endpoint, e.g., https://host:5055/")
+    ap.add_argument("--period", help="Fetch every period seconds (default: 3600)", default=3600, type=int)
     args = ap.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -74,8 +74,8 @@ def main() -> int:
     while True:
         print(f"Running traccar_check at {time.strftime('%Y-%m-%d %H:%M:%S')}")
         run(args.url, args.token)
-        print("Waiting 1 hour before next check...")
-        time.sleep(3600)  # Sleep for 1 hour (3600 seconds)
+        print(f"Waiting {args.period} seconds before next check...")
+        time.sleep(args.period)
 
 
 if __name__ == "__main__":
