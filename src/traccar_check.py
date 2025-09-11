@@ -24,43 +24,45 @@ def run(
     acc = get_account_sync(STORE_PATH, ANISETTE_SERVER, ANISETTE_LIBS_PATH)
     print(f"Logged in as: {acc.account_name} ({acc.first_name} {acc.last_name})")
     for d in devices:
-        latest_pos = latest_by_dev.get(d.get("id"))
-        key = KeyPair.from_b64(d.get("uniqueId"))
-        reports = acc.fetch_location_history(key)
+        try:
+            latest_pos = latest_by_dev.get(d.get("id"))
+            key = KeyPair.from_b64(d.get("uniqueId"))
+            reports = acc.fetch_location_history(key)
 
-        print(f"{d.get("uniqueId")} latest: {latest_pos}")
-        reports_sorted = sorted(reports, key=lambda r: r.timestamp) if reports else []
+            print(f"{d.get("uniqueId")} latest: {latest_pos}")
+            reports_sorted = sorted(reports, key=lambda r: r.timestamp) if reports else []
 
-        for rep in reports_sorted:
-            status = "UNKNOWN"
-            if rep.timestamp and latest_pos:
-                status = "NEW" if rep.timestamp > latest_pos else "STALE"
-            elif rep.timestamp and not latest_pos:
-                status = "NEW"
-            elif not rep.timestamp:
-                status = "NO_REPORT"
+            for rep in reports_sorted:
+                status = "UNKNOWN"
+                if rep.timestamp and latest_pos:
+                    status = "NEW" if rep.timestamp > latest_pos else "STALE"
+                elif rep.timestamp and not latest_pos:
+                    status = "NEW"
+                elif not rep.timestamp:
+                    status = "NO_REPORT"
 
-            #print(f" * findmy: {rep.timestamp}  status={status}")
-            if status == "NEW" and rep.timestamp is not None:
-                params = {
-                    "id": d.get("uniqueId"),
-                    "lat": getattr(rep, "latitude", None),
-                    "lon": getattr(rep, "longitude", None),
-                    "timestamp": int(rep.timestamp.timestamp()),
-                    "accuracy": getattr(rep, "accuracy", None),
-                    "confidence": getattr(rep, "confidence", None),
-                    "horizontal_accuracy": getattr(rep, "horizontal_accuracy", None),
-                    "status": getattr(rep, "status", None),
-                    "ignoreMaxSpeedFilter": "true"
-                }
-                try:
+                #print(f" * findmy: {rep.timestamp}  status={status}")
+                if status == "NEW" and rep.timestamp is not None:
+                    params = {
+                        "id": d.get("uniqueId"),
+                        "lat": getattr(rep, "latitude", None),
+                        "lon": getattr(rep, "longitude", None),
+                        "timestamp": int(rep.timestamp.timestamp()),
+                        "accuracy": getattr(rep, "accuracy", None),
+                        "confidence": getattr(rep, "confidence", None),
+                        "horizontal_accuracy": getattr(rep, "horizontal_accuracy", None),
+                        "status": getattr(rep, "status", None),
+                        "ignoreMaxSpeedFilter": "true"
+                    }
+
                     resp = requests.get(f"{base_url}:5055", params=params, timeout=5, verify=False)
                     if 200 <= resp.status_code < 300:
-                        print(f"{params} -> OsmAnd push OK")
+                        print(f"{params.get('id')}, {params.get('timestamp')} -> OK")
                     else:
-                        print(f"    -> OsmAnd push failed ({resp.status_code}): {resp.text[:200]}")
-                except Exception as e:
-                    print(f"    -> OsmAnd push error: {e}")
+                        print(f"{params.get('id')}, {params.get('timestamp')} -> FAILED ({resp.status_code}): {resp.text[:200]}")
+                        break
+        except Exception as e:
+            print(f" -> OsmAnd push error: {e}")
 
     acc.to_json(STORE_PATH)
     return 0
