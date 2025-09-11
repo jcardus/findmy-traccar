@@ -62,7 +62,7 @@ def run(
                         print(f"{params.get('id')}, {params.get('timestamp')} -> FAILED ({resp.status_code}): {resp.text[:200]}")
                         break
         except Exception as e:
-            print(f" -> OsmAnd push error: {e}")
+            print(f"❌ push error: {e}")
 
     acc.to_json(STORE_PATH)
     return 0
