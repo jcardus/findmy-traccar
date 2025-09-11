@@ -51,7 +51,7 @@ def run(
                     "confidence": getattr(rep, "confidence", None),
                     "horizontal_accuracy": getattr(rep, "horizontal_accuracy", None),
                     "status": getattr(rep, "status", None),
-                    "ignoreMaxSpeedFilter": True
+                    "ignoreMaxSpeedFilter": "true"
                 }
                 try:
                     resp = requests.get(f"{base_url}:5055", params=params, timeout=5, verify=False)
