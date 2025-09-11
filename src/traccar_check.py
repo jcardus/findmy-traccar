@@ -1,7 +1,6 @@
 import argparse
 import logging
 import time
-from datetime import datetime
 from typing import Optional
 
 import requests
@@ -61,9 +60,7 @@ def run(
                         print(f"{params.get('id')} {rep.timestamp} -> FAILED ({resp.status_code}): {resp.text[:200]}")
                         break
         except Exception as e:
-            import traceback
             print(f"{d.get("uniqueId")} ❌ {e}")
-            traceback.print_exc()
 
     acc.to_json(STORE_PATH)
     return 0
