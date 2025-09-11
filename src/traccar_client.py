@@ -14,5 +14,9 @@ def fetch(url: str, token: str, verify_tls: bool = True, timeout: int = 20) -> L
 def latest_position_by_device(positions: List[Dict[str, Any]]) -> Dict[int, _dt.datetime]:
     latest: Dict[int, _dt.datetime] = {}
     for p in positions:
-        latest[p.get("deviceId")] = _dt.datetime.fromtimestamp(p.get("fixTime") / 1000, tz=_dt.timezone.utc)
+        fix_time = p.get("fixTime")
+        if isinstance(fix_time, str):
+            latest[p.get("deviceId")] = _dt.datetime.fromisoformat(fix_time)
+        else:
+            latest[p.get("deviceId")] = _dt.datetime.fromtimestamp(fix_time / 1000, tz=_dt.timezone.utc)
     return latest
