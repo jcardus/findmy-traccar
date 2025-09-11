@@ -55,11 +55,9 @@ def run(
                         "status": getattr(rep, "status", None),
                         "ignoreMaxSpeedFilter": "true"
                     }
-
+                    print(f"{params.get('id')} {datetime.fromtimestamp(params.get('timestamp').isoformat())} -> Pushing...")
                     resp = requests.get(f"{base_url}:5055", params=params, timeout=5, verify=False)
-                    if 200 <= resp.status_code < 300:
-                        print(f"{params.get('id')} {datetime.fromtimestamp(params.get('timestamp')).isoformat()} -> OK")
-                    else:
+                    if 200 > resp.status_code or resp.status_code >= 300:
                         print(f"{params.get('id')} {datetime.fromtimestamp(params.get('timestamp')).isoformat()} -> FAILED ({resp.status_code}): {resp.text[:200]}")
                         break
         except Exception as e:
