@@ -63,7 +63,7 @@ def run(
                         print(f"{params.get('id')} {datetime.fromtimestamp(params.get('timestamp')).isoformat()} -> FAILED ({resp.status_code}): {resp.text[:200]}")
                         break
         except Exception as e:
-            print(f"{d.get("id")} ❌ push error: {e}")
+            print(f"{d.get("uniqueId")} ❌ push error: {e}")
 
     acc.to_json(STORE_PATH)
     return 0
