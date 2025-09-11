@@ -52,11 +52,14 @@ def run(
                     "horizontal_accuracy": getattr(rep, "horizontal_accuracy", None),
                     "status": getattr(rep, "status", None),
                 }
-                resp = requests.get(f"{base_url}:5055", params=params, timeout=10, verify=False)
-                if 200 <= resp.status_code < 300:
-                    print(f"{params} -> OsmAnd push OK")
-                else:
-                    print(f"    -> OsmAnd push failed ({resp.status_code}): {resp.text[:200]}")
+                try:
+                    resp = requests.get(f"{base_url}:5055", params=params, timeout=60, verify=False)
+                    if 200 <= resp.status_code < 300:
+                        print(f"{params} -> OsmAnd push OK")
+                    else:
+                        print(f"    -> OsmAnd push failed ({resp.status_code}): {resp.text[:200]}")
+                except Exception as e:
+                    print(f"    -> OsmAnd push error: {e}")
 
     acc.to_json(STORE_PATH)
     return 0
@@ -65,6 +68,7 @@ def run(
 def main() -> int:
     ap = argparse.ArgumentParser(description="Check Traccar devices for newer Find My positions")
     ap.add_argument("--url", default="http://localhost", help="Traccar base URL, e.g., https://traccar.example.com (default: http://localhost)")
+    ap.add_argument("--url2", default="http://localhost", help="Traccar base URL, e.g., https://traccar.example.com (default: http://localhost)")
     ap.add_argument("--token", required=True, help="Traccar access token (Bearer)")
     ap.add_argument("--period", help="Fetch every period seconds (default: 3600)", default=3600, type=int)
     args = ap.parse_args()
