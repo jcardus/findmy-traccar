@@ -57,7 +57,7 @@ def run(
                         "ignoreMaxSpeedFilter": "true"
                     }
                     logger.info(f"{params.get('id')} {rep.timestamp} -> Pushing to {base_url}...")
-                    resp = requests.get(f"{base_url}:5055", params=params, timeout=5, verify=False)
+                    resp = requests.get(f"{base_url}:5055", params=params, timeout=5)
                     if 200 > resp.status_code or resp.status_code >= 300:
                         logger.error(f"{params.get('id')} {rep.timestamp} -> FAILED ({resp.status_code}): {resp.text[:200]}")
                         break
