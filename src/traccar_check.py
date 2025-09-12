@@ -3,6 +3,8 @@ import logging
 import time
 from typing import Optional
 
+logger = logging.getLogger(__name__)
+
 import requests
 from findmy import KeyPair
 
@@ -22,14 +24,14 @@ def run(
     latest_by_dev = latest_position_by_device(positions)
 
     acc = get_account_sync(STORE_PATH, ANISETTE_SERVER, ANISETTE_LIBS_PATH)
-    print(f"Logged in as: {acc.account_name} ({acc.first_name} {acc.last_name})")
+    logger.info(f"Logged in as: {acc.account_name} ({acc.first_name} {acc.last_name})")
     for d in devices:
         try:
             latest_pos = latest_by_dev.get(d.get("id"))
             key = KeyPair.from_b64(d.get("uniqueId"))
             reports = acc.fetch_location_history(key)
 
-            print(f"{d.get("uniqueId")} latest: {latest_pos}")
+            logger.info(f"{d.get("uniqueId")} latest: {latest_pos}")
             reports_sorted = sorted(reports, key=lambda r: r.timestamp) if reports else []
 
             for rep in reports_sorted:
@@ -54,13 +56,13 @@ def run(
                         "status": getattr(rep, "status", None),
                         "ignoreMaxSpeedFilter": "true"
                     }
-                    print(f"{params.get('id')} {rep.timestamp} -> Pushing...")
+                    logger.info(f"{params.get('id')} {rep.timestamp} -> Pushing...")
                     resp = requests.get(f"{base_url}:5055", params=params, timeout=5, verify=False)
                     if 200 > resp.status_code or resp.status_code >= 300:
-                        print(f"{params.get('id')} {rep.timestamp} -> FAILED ({resp.status_code}): {resp.text[:200]}")
+                        logger.error(f"{params.get('id')} {rep.timestamp} -> FAILED ({resp.status_code}): {resp.text[:200]}")
                         break
         except Exception as e:
-            print(f"{d.get("uniqueId")} ❌ {e}")
+            logger.error(f"{d.get("uniqueId")} ❌ {e}")
 
     acc.to_json(STORE_PATH)
     return 0
@@ -74,12 +76,12 @@ def main() -> int:
     ap.add_argument("--period", help="Fetch every period seconds (default: 3600)", default=3600, type=int)
     args = ap.parse_args()
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     
     while True:
-        print(f"Running traccar_check at {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        logger.info("Running traccar_check")
         run(args.url, args.token)
-        print(f"Waiting {args.period} seconds before next check...")
+        logger.info(f"Waiting {args.period} seconds before next check...")
         time.sleep(args.period)
 
 
