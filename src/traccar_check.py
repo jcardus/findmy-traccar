@@ -43,7 +43,6 @@ def run(
                 elif not rep.timestamp:
                     status = "NO_REPORT"
 
-                #print(f" * findmy: {rep.timestamp}  status={status}")
                 if status == "NEW" and rep.timestamp is not None:
                     params = {
                         "id": d.get("uniqueId"),
@@ -80,7 +79,10 @@ def main() -> int:
     
     while True:
         logger.info("Running traccar_check")
-        run(args.url, args.token)
+        try:
+            run(args.url, args.token)
+        except Exception as e:
+            logger.error(f"Error running traccar_check: {e}")
         logger.info(f"Waiting {args.period} seconds before next check...")
         time.sleep(args.period)
 
