@@ -31,7 +31,7 @@ def run(
             key = KeyPair.from_b64(d.get("uniqueId"))
             reports = acc.fetch_location_history(key)
 
-            logger.info(f"{d.get("uniqueId")} latest: {latest_pos}")
+            logger.info(f"{d.get("uniqueId")} latest: {latest_pos}, reports: {len(reports)}")
             reports_sorted = sorted(reports, key=lambda r: r.timestamp) if reports else []
 
             for rep in reports_sorted:
@@ -51,7 +51,7 @@ def run(
                         "lon": rep.longitude,
                         "timestamp": int(rep.timestamp.timestamp()),
                         "confidence": rep.confidence,
-                        "horizontal_accuracy": rep.horizontal_accuracy,
+                        "accuracy": rep.horizontal_accuracy,
                         "status": rep.status,
                         "ignoreMaxSpeedFilter": "true"
                     }
