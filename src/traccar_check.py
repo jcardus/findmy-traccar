@@ -47,13 +47,12 @@ def run(
                 if status == "NEW" and rep.timestamp is not None:
                     params = {
                         "id": d.get("uniqueId"),
-                        "lat": getattr(rep, "latitude", None),
-                        "lon": getattr(rep, "longitude", None),
+                        "lat": rep.latitude,
+                        "lon": rep.longitude,
                         "timestamp": int(rep.timestamp.timestamp()),
-                        "accuracy": getattr(rep, "accuracy", None),
-                        "confidence": getattr(rep, "confidence", None),
-                        "horizontal_accuracy": getattr(rep, "horizontal_accuracy", None),
-                        "status": getattr(rep, "status", None),
+                        "confidence": rep.confidence,
+                        "horizontal_accuracy": rep.horizontal_accuracy,
+                        "status": rep.status,
                         "ignoreMaxSpeedFilter": "true"
                     }
                     logger.info(f"{params.get('id')} {rep.timestamp} -> Pushing to {base_url}...")
