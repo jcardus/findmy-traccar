@@ -53,7 +53,8 @@ def run(
                         "confidence": rep.confidence,
                         "accuracy": rep.horizontal_accuracy,
                         "status": rep.status,
-                        "ignoreMaxSpeedFilter": "true"
+                        "ignoreMaxSpeedFilter": "true",
+                        "approximate": "true"
                     }
                     logger.info(f"{params.get('id')} {rep.timestamp} -> Pushing to {base_url}...")
                     resp = requests.get(f"{base_url}:5055", params=params, timeout=5)
