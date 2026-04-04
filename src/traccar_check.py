@@ -18,9 +18,9 @@ ANISETTE_LIBS_PATH = "ani_libs.bin"
 def run(
     base_url: str,
     token: str,
-    push_host: Optional[str] = None,
+    push_url: Optional[str] = None,
 ) -> int:
-    push_url = push_host or f"{base_url}:5055"
+    push_url = push_url or f"{base_url}:5055"
     devices = fetch(base_url.rstrip("/") + "/api/devices", token, False)
     positions = fetch(base_url.rstrip("/") + "/api/positions", token, False)
     latest_by_dev = latest_position_by_device(positions)
@@ -73,7 +73,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Check Traccar devices for newer Find My positions")
     ap.add_argument("--url", default="http://localhost", help="Traccar base URL, e.g., https://traccar.example.com (default: http://localhost)")
     ap.add_argument("--token", required=True, help="Traccar access token (Bearer)")
-    ap.add_argument("--push-host", default=None, help="Host for pushing positions (default: {url}:5055)")
+    ap.add_argument("--push-url", default=None, help="URL for pushing positions (default: {url}:5055)")
     ap.add_argument("--period", help="Fetch every period seconds (default: 3600)", default=3600, type=int)
     args = ap.parse_args()
 
@@ -82,7 +82,7 @@ def main() -> int:
     while True:
         logger.info("Running traccar_check")
         try:
-            run(args.url, args.token, args.push_host)
+            run(args.url, args.token, args.push_url)
         except Exception as e:
             logger.error(f"Error running traccar_check: {e}")
         logger.info(f"Waiting {args.period} seconds before next check...")
