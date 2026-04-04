@@ -81,11 +81,6 @@ def main() -> int:
         logger.info("Running traccar_check")
         try:
             run(args.url, args.token)
-        except requests.exceptions.HTTPError as e:
-            msg = f"Error running traccar_check: {e}"
-            if e.response is not None and e.response.status_code == 500:
-                msg += f"\nResponse body: {e.response.text}"
-            logger.error(msg)
         except Exception as e:
             logger.error(f"Error running traccar_check: {e}")
         logger.info(f"Waiting {args.period} seconds before next check...")

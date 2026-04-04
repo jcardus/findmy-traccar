@@ -8,6 +8,11 @@ def _auth_headers(token: str) -> Dict[str, str]:
 
 def fetch(url: str, token: str, verify_tls: bool = True, timeout: int = 20) -> List[Dict[str, Any]]:
     resp = requests.get(url, headers=_auth_headers(token), timeout=timeout, verify=verify_tls)
+    if resp.status_code == 500:
+        raise requests.exceptions.HTTPError(
+            f"500 Server Error for url: {url}\nResponse body: {resp.text}",
+            response=resp,
+        )
     resp.raise_for_status()
     return resp.json()
 
