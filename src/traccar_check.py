@@ -53,7 +53,8 @@ def run(
                         "timestamp": int(rep.timestamp.timestamp()),
                         "confidence": rep.confidence,
                         "accuracy": rep.horizontal_accuracy,
-                        "status": rep.status,
+                        "power": (voltage := (rep.status + 200) / 100),
+                        "batteryLevel": max(0, min(100, (voltage - 2.8) * 100)),
                         "ignoreMaxSpeedFilter": "true",
                         "approximate": "true"
                     }
@@ -78,7 +79,7 @@ def main() -> int:
     args = ap.parse_args()
 
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    
+
     while True:
         logger.info("Running traccar_check")
         try:
