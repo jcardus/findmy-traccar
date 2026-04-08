@@ -53,8 +53,7 @@ def run(
                         "timestamp": int(rep.timestamp.timestamp()),
                         "confidence": rep.confidence,
                         "accuracy": rep.horizontal_accuracy,
-                        "power": (voltage := (rep.status + 200) / 100),
-                        "batteryLevel": max(0, min(100, (voltage - 2.8) * 100)),
+                        **( {"power": (voltage := (rep.status + 200) / 100), "batteryLevel": max(0, min(100, (voltage - 2.8) * 100))} if rep.status > 0 else {} ),
                         "ignoreMaxSpeedFilter": "true",
                         "approximate": "true"
                     }
