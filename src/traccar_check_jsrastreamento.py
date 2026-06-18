@@ -18,9 +18,7 @@ ANISETTE_LIBS_PATH = "ani_libs.bin"
 def run(
     base_url: str,
     token: str,
-    push_url: Optional[str] = None,
 ) -> int:
-    push_url = push_url or f"{base_url}:5055"
     devices = fetch(base_url.rstrip("/") + "/api/devices", token, False)
     positions = fetch(base_url.rstrip("/") + "/api/positions", token, False)
     latest_by_dev = latest_position_by_device(positions)
@@ -53,12 +51,12 @@ def run(
                         "timestamp": int(rep.timestamp.timestamp()),
                         "confidence": rep.confidence,
                         "accuracy": rep.horizontal_accuracy,
-                        **( {"power": (voltage := (rep.status + 200) / 100), "batteryLevel": int(max(0, min(100, (voltage - 2.8) * 100)))} if rep.status > 0 else {} ),
+                        "status": rep.status,
                         "ignoreMaxSpeedFilter": "true",
                         "approximate": "true"
                     }
-                    logger.info(f"{params.get('id')} {rep.timestamp} -> Pushing to {push_url}...")
-                    resp = requests.get(push_url, params=params, timeout=5)
+                    logger.info(f"{params.get('id')} {rep.timestamp} -> Pushing to {base_url}...")
+                    resp = requests.get(f"{base_url}:5055", params=params, timeout=5)
                     if 200 > resp.status_code or resp.status_code >= 300:
                         logger.error(f"{params.get('id')} {rep.timestamp} -> FAILED ({resp.status_code}): {resp.text[:200]}")
                         break
@@ -72,19 +70,21 @@ def run(
 def main() -> int:
     ap = argparse.ArgumentParser(description="Check Traccar devices for newer Find My positions")
     ap.add_argument("--url", default="http://localhost", help="Traccar base URL, e.g., https://traccar.example.com (default: http://localhost)")
+    ap.add_argument("--url2", default="http://localhost", help="Traccar base URL, e.g., https://traccar.example.com (default: http://localhost)")
     ap.add_argument("--token", required=True, help="Traccar access token (Bearer)")
-    ap.add_argument("--push-url", default=None, help="URL for pushing positions (default: {url}:5055)")
     ap.add_argument("--period", help="Fetch every period seconds (default: 3600)", default=3600, type=int)
     args = ap.parse_args()
 
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-    logger.info("Running traccar_check")
-    try:
-        run(args.url, args.token, args.push_url)
-    except Exception as e:
-        logger.error(f"Error running traccar_check: {e}")
-    logger.info(f"end")
+    
+    while True:
+        logger.info("Running traccar_check")
+        try:
+            run(args.url, args.token)
+        except Exception as e:
+            logger.error(f"Error running traccar_check: {e}")
+        logger.info(f"Waiting {args.period} seconds before next check...")
+        time.sleep(args.period)
 
 
 if __name__ == "__main__":
